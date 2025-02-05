@@ -4,7 +4,6 @@ const ASSETS = [
     "/index.html",
     "/estilos.css",
     "/app.js",
-    "/sw.js",
     "/imagenes/1.jpg",
     "/imagenes/2.jpg",
     "/imagenes/3.jpg",
@@ -45,9 +44,12 @@ self.addEventListener("install", (event) => {
         caches.open(CACHE_NAME).then((cache) => {
             console.log("Cacheando archivos esenciales...");
             return cache.addAll(ASSETS);
+        }).catch((error) => {
+            console.error("Error al cachear archivos:", error);
         })
     );
 });
+
 
 // Activación
 self.addEventListener("activate", (event) => {
@@ -57,7 +59,10 @@ self.addEventListener("activate", (event) => {
             return Promise.all(
                 cacheNames
                     .filter((cache) => cache !== CACHE_NAME)
-                    .map((cache) => caches.delete(cache))
+                    .map((cache) => {
+                        console.log("Borrando caché antigua:", cache);
+                        return caches.delete(cache);
+                    })
             );
         })
     );
