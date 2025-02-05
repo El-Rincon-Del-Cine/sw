@@ -79,9 +79,20 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
     console.log('Service Worker: fetch', event.request.url);
+    
     event.respondWith(
-        caches.match(event.request).then(response =>{
-            return response || fetch(event.request);    
-        }).catch(() => caches.match('/offline.html'))
+        caches.match(event.request).then(response => {
+            if (response) {
+                return response;
+            }
+
+            return fetch(event.request).then(networkResponse => {
+                return networkResponse;
+            }).catch(() => {
+                if (event.request.mode === 'navigate') {
+                    return caches.match('/offline.html');
+                }
+            });
+        })
     );
 });
