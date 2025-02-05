@@ -2,12 +2,11 @@ self.addEventListener('install', event => {
     console.log('Service Worker: Instalando...');
     event.waitUntil(
         caches.open('mi-cache-v1').then(cache => {
-            return Promise.addAll(
-                [
+            return Promise.all([
                     '/',
                     '/index.html',
                     '/Contactanos.html',
-                    '/oferta_educativa.html',
+                    '/Oferta educativa.html',
                     '/plan.html',
                     '/Ubicacion.html',
                     '/estilos.css',
@@ -47,7 +46,7 @@ self.addEventListener('install', event => {
                     '/offline.html',
                     '/manifest.json'
                 ].map(url =>
-                    fetch(url) 
+                    fetch(url) // Intentamos obtener cada archivo
                         .then(response => {
                             if (!response.ok) throw new Error(`Error al cargar ${url}`);
                             return cache.put(url, response.clone());
@@ -58,6 +57,7 @@ self.addEventListener('install', event => {
         })
     );
 });
+
 
 
 self.addEventListener('activate', event => {
@@ -82,18 +82,12 @@ self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request).then(response => {
             if (response) {
-                return response;  // Si está en caché, devuelve el archivo
+                return response;
             }
 
-            // Si no está en caché, realiza la solicitud a la red
             return fetch(event.request).then(networkResponse => {
-                return caches.open('mi-cache-v1').then(cache => {
-                    // Cachea el archivo solicitado dinámicamente
-                    cache.put(event.request, networkResponse.clone());
-                    return networkResponse;
-                });
+                return networkResponse;
             }).catch(() => {
-                // Si no hay red y es una solicitud de página (navegación), devuelve la página offline
                 if (event.request.mode === 'navigate') {
                     return caches.match('/offline.html');
                 }
@@ -101,4 +95,3 @@ self.addEventListener('fetch', event => {
         })
     );
 });
-
