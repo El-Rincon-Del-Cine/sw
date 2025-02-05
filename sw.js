@@ -2,7 +2,7 @@ self.addEventListener('install', event => {
     console.log('Service Worker: Instalando...');
     event.waitUntil(
         caches.open('mi-cache-v1').then(cache => {
-            return Promise.all(
+            return cache.addAll(
                 [
                     '/',
                     '/index.html',
@@ -79,16 +79,21 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
     console.log('Service Worker: fetch', event.request.url);
-    
     event.respondWith(
         caches.match(event.request).then(response => {
             if (response) {
-                return response;
+                return response;  // Si está en caché, devuelve el archivo
             }
 
+            // Si no está en caché, realiza la solicitud a la red
             return fetch(event.request).then(networkResponse => {
-                return networkResponse;
+                return caches.open('mi-cache-v1').then(cache => {
+                    // Cachea el archivo solicitado dinámicamente
+                    cache.put(event.request, networkResponse.clone());
+                    return networkResponse;
+                });
             }).catch(() => {
+                // Si no hay red y es una solicitud de página (navegación), devuelve la página offline
                 if (event.request.mode === 'navigate') {
                     return caches.match('/offline.html');
                 }
@@ -96,3 +101,4 @@ self.addEventListener('fetch', event => {
         })
     );
 });
+
