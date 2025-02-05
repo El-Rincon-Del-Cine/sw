@@ -3,7 +3,7 @@ self.addEventListener('install', event => {
     console.log('Service Worker: Instalando...');
     event.waitUntil(
         caches.open('mi-cache-v1').then(cache =>{
-            return cache.addAll([
+        cache.addAll([
     '/',
     '/index.html',
     '/Contactanos.html',
