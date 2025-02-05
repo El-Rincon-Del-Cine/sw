@@ -7,7 +7,7 @@ self.addEventListener('install', event => {
                     '/',
                     '/index.html',
                     '/Contactanos.html',
-                    '/Oferta educativa.html',
+                    '/oferta_educativa.html',
                     '/plan.html',
                     '/Ubicacion.html',
                     '/estilos.css',
