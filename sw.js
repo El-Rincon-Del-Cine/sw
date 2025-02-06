@@ -1,10 +1,10 @@
 const CACHE_NAME = 'mi-cache-v1';
 
-self.addEventListener('install', (event) => {
+self.addEventListener('install', event => {
     console.log('Service Worker: Instalado');
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll([
+        caches.open(CACHE_NAME).then(cache => {
+            return Promise.all([
                 '/',
                 '/index.html',
                 '/estilos.css',
@@ -50,7 +50,7 @@ self.addEventListener('install', (event) => {
     );
 });
 
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', event => {
     console.log('Service Worker: Activado');
     const cacheWhitelist = [CACHE_NAME];
     event.waitUntil(
@@ -68,7 +68,7 @@ self.addEventListener('activate', (event) => {
     return self.clients.claim();  
 });
 
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', event => {
     console.log('Service Worker: Fetching', event.request.url);
     
     event.respondWith(
