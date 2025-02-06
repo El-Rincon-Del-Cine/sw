@@ -1,8 +1,8 @@
-self.addEventListener('install', (event) => {
+self.addEventListener('install', event => {
     console.log('Service Worker: Instalado');
     event.waitUntil(
         caches.open('mi-cache-v1').then(cache => {
-            return cache.addAll([
+            return Promise.all([
                 'index.html',
                 'estilos.css',
                 'manifest.json',
